@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 # QUANTUM FOOTBALL ANALYTICS ENGINE v4.0
 # Bloomberg Terminal - Senior Quant Trading System
@@ -667,15 +668,18 @@ def heatmap_fig(mat, hn, an, top_scores=None):
     return fig
 
 def bar1x2(ph, pd, pa, hn, an):
+    ph, pd, pa = float(ph), float(pd), float(pa)
+    vals = [ph*100, pd*100, pa*100]
+    y_max = max(vals) * 1.40 + 5
     fig = go.Figure(go.Bar(
-        x=[hn,'DRAW',an], y=[ph*100,pd*100,pa*100],
+        x=[hn,'DRAW',an], y=vals,
         marker_color=['#ff6600','#444466','#00aaff'],
-        text=[f"{v:.1f}%" for v in [ph*100,pd*100,pa*100]],
+        text=[f'{v:.1f}%' for v in vals],
         textposition='outside', textfont=dict(size=12,color='#e8e8f0'), width=0.45,
     ))
     fig.update_layout(**PL, title=_ptitle('1X2 DISTRIBUTION'),
-                      yaxis=dict(range=[0,max(ph,pd,pa)*140+5],gridcolor='#1e1e35',
-                                 ticksuffix='%',zerolinecolor='#1e1e35'),
+                      yaxis=dict(range=[0, y_max], gridcolor='#1e1e35',
+                                 ticksuffix='%', zerolinecolor='#1e1e35'),
                       height=280, bargap=0.35)
     return fig
 
@@ -1868,4 +1872,3 @@ VALUE EXACT SCORES:
 
 if __name__ == '__main__':
     main()
-
