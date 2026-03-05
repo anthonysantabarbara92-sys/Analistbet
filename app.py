@@ -1399,8 +1399,7 @@ def main():
             return ['']*len(row)
 
         st.dataframe(
-            df_es.style.apply(style_es, axis=1)
-                 .background_gradient(subset=['PROB%'], cmap='YlOrRd'),
+            df_es.style.apply(style_es, axis=1),
             use_container_width=True, hide_index=True
         )
 
@@ -1628,12 +1627,7 @@ def main():
         df_s = df[sc].rename(columns={'market':'MERCATO','prob%':'PROB%','fair':'FAIR',
                                        'bk':'BK','edge%':'EDGE%','stake':'STAKEEUR',
                                        'stake%':'STAKE%','ev':'EVEUR','signal':'SEGNALE'})
-        st.dataframe(
-            df_s.style
-                .background_gradient(subset=['EDGE%'],cmap='RdYlGn',vmin=-5,vmax=15)
-                .format({'PROB%':'{:.2f}%','FAIR':'{:.3f}','BK':'{:.2f}',
-                         'EDGE%':'{:+.2f}%','STAKEEUR':'EUR{:.2f}','STAKE%':'{:.2f}%','EVEUR':'EUR{:.2f}'}),
-            use_container_width=True, hide_index=True)
+        st.dataframe(df_s, use_container_width=True, hide_index=True)
 
         c1,c2 = st.columns(2)
         with c1: st.plotly_chart(radar_fig(markets),use_container_width=True)
@@ -1698,8 +1692,7 @@ def main():
         with c1:
             st.markdown(sh_('[TARGET]','TOP RISULTATI ESATTI (MC)'), unsafe_allow_html=True)
             df_mc = pd.DataFrame(mc['top_scores'],columns=['SCORE','FREQ%'])
-            st.dataframe(df_mc.style.background_gradient(subset=['FREQ%'],cmap='YlOrRd')
-                           .format({'FREQ%':'{:.2f}%'}),
+            st.dataframe(df_mc,
                          use_container_width=True,hide_index=True)
         with c2:
             st.markdown(sh_('[CHART]','POISSON vs MONTE CARLO'), unsafe_allow_html=True)
