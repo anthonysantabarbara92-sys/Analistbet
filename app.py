@@ -1177,8 +1177,8 @@ def main():
         fm = FinanceManager
         st.markdown(sh_('[QUANT]','PARAMETRI POISSON'), unsafe_allow_html=True)
         st.markdown(grid(
-            mc_('λ
-            mc_('λ
+            mc_('L
+            mc_('L
  '+hn,    f"{R['lam_h']:.4f}", 'Expected Goals Home','org'),
  '+an,    f"{R['lam_a']:.4f}", 'Expected Goals Away','blu'),
             mc_('E[Goals]', f"{R['lam_h']+R['lam_a']:.3f}",
