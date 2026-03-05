@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # QUANTUM FOOTBALL ANALYTICS ENGINE v4.0
 # Bloomberg Terminal - Senior Quant Trading System
@@ -677,10 +676,13 @@ def bar1x2(ph, pd, pa, hn, an):
         text=[f'{v:.1f}%' for v in vals],
         textposition='outside', textfont=dict(size=12,color='#e8e8f0'), width=0.45,
     ))
-    fig.update_layout(**PL, title=_ptitle('1X2 DISTRIBUTION'),
-                      yaxis=dict(range=[0, y_max], gridcolor='#1e1e35',
-                                 ticksuffix='%', zerolinecolor='#1e1e35'),
-                      height=280, bargap=0.35)
+    layout = dict(PL)
+    layout['title'] = _ptitle('1X2 DISTRIBUTION')
+    layout['height'] = 280
+    layout['bargap'] = 0.35
+    fig.update_layout(**layout)
+    fig.update_yaxes(range=[0, y_max], ticksuffix='%',
+                     gridcolor='#1e1e35', zerolinecolor='#1e1e35')
     return fig
 
 def exact_scores_chart(top_scores: List[Dict], bk_odds_map: Dict[str,float]):
@@ -744,9 +746,8 @@ def asian_hcap_fig(ah_lines, ph_list, pa_list):
                              name='Away Cover',line=dict(color='#00aaff',width=2),marker=dict(size=7)))
     fig.add_hline(y=50,line=dict(color='#444466',width=1,dash='dot'))
     fig.update_layout(**PL, title=_ptitle('ASIAN HANDICAP CURVE'),
-                      xaxis_title='Handicap (Home)',
-                      yaxis=dict(ticksuffix='%',gridcolor='#1e1e35',zerolinecolor='#1e1e35'),
-                      height=310)
+                      xaxis_title='Handicap (Home)', height=310)
+    fig.update_yaxes(ticksuffix='%', gridcolor='#1e1e35', zerolinecolor='#1e1e35')
     return fig
 
 def htft_fig(htft_probs):
@@ -758,9 +759,8 @@ def htft_fig(htft_probs):
         x=combos, y=vals, marker_color=colors,
         text=[f"{v:.2f}%" for v in vals], textposition='outside',
         textfont=dict(size=9,color='#e8e8f0'), width=0.6))
-    fig.update_layout(**PL, title=_ptitle('HT/FT PROBABILITIES'),
-                      yaxis=dict(ticksuffix='%',gridcolor='#1e1e35',zerolinecolor='#1e1e35'),
-                      height=300)
+    fig.update_layout(**PL, title=_ptitle('HT/FT PROBABILITIES'), height=300)
+    fig.update_yaxes(ticksuffix='%', gridcolor='#1e1e35', zerolinecolor='#1e1e35')
     return fig
 
 def cards_fig(cards_range, h_avg, a_avg):
@@ -833,9 +833,8 @@ def kelly_bar(markets, br):
         textposition='outside',textfont=dict(size=8,color='#e8e8f0'),width=0.5))
     fig.add_hline(y=br*0.05,line=dict(color='#ffcc00',dash='dot',width=1),
                   annotation_text='5% LIMIT',annotation_font=dict(size=8,color='#ffcc00'))
-    fig.update_layout(**PL,title=_ptitle('KELLY STAKES (EUR)'),
-                      yaxis=dict(tickprefix='EUR',gridcolor='#1e1e35',zerolinecolor='#1e1e35'),
-                      height=280)
+    fig.update_layout(**PL, title=_ptitle('KELLY STAKES (EUR)'), height=280)
+    fig.update_yaxes(tickprefix='EUR', gridcolor='#1e1e35', zerolinecolor='#1e1e35')
     return fig
 
 
@@ -1872,3 +1871,4 @@ VALUE EXACT SCORES:
 
 if __name__ == '__main__':
     main()
+
