@@ -1,0 +1,148 @@
+{
+  "identity": {
+    "name": "Analizzatore Calcistico Pro",
+    "persona": "The High-Frequency Trader",
+    "vibe": "Precision, Dark, Mathematical, High-Stakes",
+    "target_audience": "Italian professional sports traders and bookmakers",
+    "design_principle": "Information Density > Decoration. Every pixel must earn its rent."
+  },
+  "typography": {
+    "fonts": {
+      "headings": {
+        "family": "JetBrains Mono",
+        "weights": ["700", "800"],
+        "fallback": "monospace",
+        "usage": "Headings, Big Numbers, Scorelines, Odds"
+      },
+      "body": {
+        "family": "IBM Plex Sans",
+        "weights": ["400", "500", "600"],
+        "fallback": "sans-serif",
+        "usage": "Analysis text, UI labels, Reports"
+      }
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl tracking-tight font-bold uppercase",
+      "h2": "text-2xl md:text-3xl tracking-tight font-bold",
+      "h3": "text-xl font-semibold tracking-normal",
+      "data_large": "text-6xl font-mono tracking-tighter",
+      "label": "text-xs uppercase tracking-widest text-muted-foreground"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#09090b",
+      "surface": "#18181b",
+      "surface_highlight": "#27272a",
+      "border": "#27272a",
+      "primary": "#22c55e",
+      "secondary": "#3b82f6",
+      "accent": "#f59e0b",
+      "destructive": "#ef4444",
+      "text_primary": "#fafafa",
+      "text_secondary": "#a1a1aa",
+      "success_glow": "0 0 20px rgba(34, 197, 94, 0.2)",
+      "chart_grid": "#27272a"
+    },
+    "semantic": {
+      "positive_trend": "text-green-500",
+      "negative_trend": "text-red-500",
+      "neutral_trend": "text-yellow-500",
+      "high_probability": "bg-green-500/10 text-green-500 border-green-500/20",
+      "low_probability": "bg-red-500/10 text-red-500 border-red-500/20"
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid Mode B (High Density)",
+    "container": "max-w-[1600px] mx-auto p-4 md:p-6",
+    "spacing": {
+      "panel_gap": "gap-4",
+      "internal_padding": "p-4 md:p-6"
+    },
+    "z_index": {
+      "modal": 50,
+      "dropdown": 40,
+      "sticky_nav": 30,
+      "card_hover": 20,
+      "base": 0
+    }
+  },
+  "components": {
+    "ui_library": "shadcn/ui",
+    "customizations": [
+      {
+        "component": "Card",
+        "style": "bg-zinc-900 border-zinc-800 rounded-none md:rounded-sm shadow-none hover:border-zinc-700 transition-colors"
+      },
+      {
+        "component": "Button",
+        "style": "rounded-sm font-mono uppercase tracking-wider font-bold"
+      },
+      {
+        "component": "Input",
+        "style": "bg-black border-zinc-800 focus:ring-1 focus:ring-green-500 rounded-sm font-mono"
+      },
+      {
+        "component": "Badge",
+        "style": "rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest"
+      }
+    ],
+    "special_components": [
+      {
+        "name": "TracingBeamCard",
+        "description": "A card with a glowing gradient border that follows the perimeter, used for the 'Best Bet' or 'Analyst Pick'."
+      },
+      {
+        "name": "TerminalOutput",
+        "description": "A text block that simulates typing for the Analyst Report, using a monospaced font and a blinking cursor."
+      },
+      {
+        "name": "ProbabilityGauge",
+        "description": "Custom SVG donut chart or linear progress bar with distinct color zones (Red/Yellow/Green) for Poisson results."
+      }
+    ]
+  },
+  "visual_enhancers": {
+    "borders": "1px solid #27272a (Zinc 800)",
+    "shadows": "None by default, 'glow' effects for active states",
+    "textures": "Subtle noise overlay (opacity 0.02) on background to reduce banding",
+    "icons": "Lucide React (default), sized 16px or 20px for density"
+  },
+  "motion": {
+    "hover": "duration-200 ease-out",
+    "entrance": "staggered fade-in-up (duration 0.3s)",
+    "loading": "Simulated terminal scrolling text or progress bar with 'calculating...' steps"
+  },
+  "image_urls": {
+    "background_hero": {
+      "url": "https://images.unsplash.com/photo-1760978632119-5069b6c9fb68?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxkYXJrJTIwYWJzdHJhY3QlMjBkYXRhJTIwZ3JpZCUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc0MDA3MzIzfDA&ixlib=rb-4.1.0&q=85",
+      "desc": "Abstract wavy metallic surface, use with heavy overlay (opacity 0.1) as app background"
+    },
+    "analysis_texture": {
+      "url": "https://images.pexels.com/photos/6203470/pexels-photo-6203470.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "desc": "Neon blue line chart on grid, use for 'Analysis Mode' headers or loading states"
+    },
+    "football_mood": {
+      "url": "https://images.unsplash.com/photo-1616514169928-a1e40c6f791c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxzb2NjZXIlMjBiYWxsJTIwdGFjdGljYWwlMjBib2FyZCUyMGRhcmt8ZW58MHx8fHwxNzc0MDA3MzI0fDA&ixlib=rb-4.1.0&q=85",
+      "desc": "Minimalist soccer ball on black sand, use for Empty States or 'No Match Selected'"
+    }
+  },
+  "instructions_to_main_agent": [
+    "INSTALL: yarn add @radix-ui/react-icons lucide-react recharts framer-motion clsx tailwind-merge",
+    "SETUP: Configure tailwind.config.js to add the specific neon colors and fonts (JetBrains Mono, IBM Plex Sans).",
+    "COMPONENT: Build a 'MatchInputForm' that looks like a command palette or a trading ticket.",
+    "COMPONENT: Build a 'ProbabilityMatrix' grid for exact scores (Poisson distribution visualization).",
+    "CRITICAL: Ensure the Analyst Report text is rendered with a 'typewriter' effect using framer-motion.",
+    "CRITICAL: Dark Mode only. Force 'dark' class on the root HTML element.",
+    "CRITICAL: Use Italian language for all static text (Squadra Casa, Squadra Trasferta, Probabilità, Quote).",
+    "DATA: Ensure all probabilities are formatted to 1-2 decimal places (e.g., 45.2%).",
+    "TESTING: Add data-testid to the 'Analyze' button and the 'Result Card'."
+  ],
+  "universal_guidelines": [
+    "Do not use gradients for main backgrounds, only for subtle borders or active states.",
+    "Use glass-morphism sparingly (only for sticky headers/overlays), prefer solid high-contrast backgrounds for data readability.",
+    "Interactive elements must have immediate feedback (hover color change, scale 0.98 on click).",
+    "Avoid 'AI slop' rounded corners. Go for sharp (rounded-sm) or semi-sharp (rounded-md) to match the professional trading vibe.",
+    "Use 'sonner' for notifications (e.g., 'Analysis Complete', 'Error Fetching Data')."
+  ]
+}
