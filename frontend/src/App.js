@@ -91,6 +91,12 @@ function App() {
     setError(null);
   };
 
+  const handleRecalculate = async () => {
+    if (!analysis?.match_info) return;
+    toast.info("Ricalcolo con dati web aggiornati...");
+    await handleAnalyze(analysis.match_info);
+  };
+
   const handleLoadHistory = (item) => {
     setAnalysis(item.result);
     setPhase("results");
@@ -114,6 +120,7 @@ function App() {
           <AnalysisResults
             analysis={analysis}
             onNewAnalysis={handleNewAnalysis}
+            onRecalculate={handleRecalculate}
           />
         )}
       </main>

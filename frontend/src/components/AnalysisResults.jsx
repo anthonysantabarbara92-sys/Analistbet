@@ -2,9 +2,6 @@ import { useState } from "react";
 import {
   ArrowLeft,
   TrendingUp,
-  TrendingDown,
-  Minus,
-  Users,
   Zap,
   Target,
   AlertTriangle,
@@ -15,11 +12,14 @@ import {
   Shield,
   Crosshair,
   Activity,
+  Globe,
+  RefreshCw,
 } from "lucide-react";
 
 // ── Utility helpers ──────────────────────────────────────────────────────────
 const pct = (v) => (typeof v === "number" ? (v * 100).toFixed(1) + "%" : "—");
 const toFixed2 = (v) => (typeof v === "number" ? v.toFixed(2) : "—");
+const toOdds = (v) => (typeof v === "number" && v > 0 ? (1 / v).toFixed(2) : "—");
 
 function getFormColor(char) {
   const c = char?.toUpperCase();
@@ -114,7 +114,7 @@ function DataQualityBadge({ quality }) {
 }
 
 // ── SECTION: Match Header ─────────────────────────────────────────────────────
-function MatchHeader({ match_info, confidence, data_quality, onNewAnalysis }) {
+function MatchHeader({ match_info, confidence, data_quality, web_search_used, web_queries_found, onNewAnalysis, onRecalculate }) {
   return (
     <div
       data-testid="match-header"
@@ -129,6 +129,15 @@ function MatchHeader({ match_info, confidence, data_quality, onNewAnalysis }) {
             <span className="text-[10px] font-mono text-zinc-600">
               {match_info?.matchday}
             </span>
+            {web_search_used && (
+              <span
+                data-testid="web-search-badge"
+                className="flex items-center gap-1 text-[9px] font-mono uppercase tracking-widest text-blue-400 border border-blue-500/20 bg-blue-500/5 px-2 py-0.5 rounded-sm"
+              >
+                <Globe className="w-2.5 h-2.5" />
+                Web Search ({web_queries_found}/8)
+              </span>
+            )}
           </div>
           <h2 className="text-2xl sm:text-3xl font-mono font-bold text-white tracking-tight">
             <span className="text-green-400">{match_info?.home}</span>
@@ -171,14 +180,24 @@ function MatchHeader({ match_info, confidence, data_quality, onNewAnalysis }) {
         </div>
       </div>
 
-      <button
-        onClick={onNewAnalysis}
-        data-testid="back-to-form-btn"
-        className="mt-4 flex items-center gap-1.5 text-xs font-mono text-zinc-600 hover:text-zinc-300 transition-colors"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Nuova analisi
-      </button>
+      <div className="flex items-center gap-4 mt-4">
+        <button
+          onClick={onNewAnalysis}
+          data-testid="back-to-form-btn"
+          className="flex items-center gap-1.5 text-xs font-mono text-zinc-600 hover:text-zinc-300 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Nuova analisi
+        </button>
+        <button
+          onClick={onRecalculate}
+          data-testid="recalculate-btn"
+          className="flex items-center gap-1.5 text-xs font-mono text-zinc-600 hover:text-green-400 transition-colors border border-zinc-800 hover:border-green-500/30 rounded-sm px-2.5 py-1"
+        >
+          <RefreshCw className="w-3 h-3" />
+          Ricalcola
+        </button>
+      </div>
     </div>
   );
 }
@@ -400,21 +419,41 @@ function ResultMarket({ result, home, away }) {
       data-testid="result-market"
       className="bg-zinc-900 border border-zinc-800 rounded-sm p-5"
     >
-      <SectionTitle icon={Target} title="Mercato 1X2" subtitle="Probabilità risultato finale" />
+      <SectionTitle icon={Target} title="Mercato 1X2" subtitle="Probabilità + quota decimale" />
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.label} className={item.value === max ? "ring-1 ring-offset-2 ring-offset-zinc-900 rounded-sm" : ""} style={item.value === max ? { ringColor: item.color } : {}}>
-            <ProbBar
-              label={item.label}
-              value={item.value}
-              color={item.color}
-              bgColor="#27272a"
-            />
+          <div key={item.label}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                {item.label}
+              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-mono font-bold" style={{ color: item.color }}>
+                  {pct(item.value)}
+                </span>
+                <span
+                  data-testid={`odds-${item.label.replace(/\s/g, "-").toLowerCase()}`}
+                  className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded-sm border ${
+                    item.value === max
+                      ? "border-zinc-600 text-white bg-zinc-800"
+                      : "border-zinc-800 text-zinc-500"
+                  }`}
+                >
+                  {toOdds(item.value)}
+                </span>
+              </div>
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#27272a" }}>
+              <div
+                className="h-full rounded-full prob-bar-fill"
+                style={{ width: `${item.value * 100}%`, backgroundColor: item.color }}
+              />
+            </div>
           </div>
         ))}
       </div>
       <p className="text-[9px] font-mono text-zinc-700 mt-3 text-right">
-        Somma: {((home_win + draw + away_win) * 100).toFixed(1)}%
+        Somma prob: {((home_win + draw + away_win) * 100).toFixed(1)}% · Quote = 1/probabilità
       </p>
     </div>
   );
@@ -423,70 +462,43 @@ function ResultMarket({ result, home, away }) {
 // ── SECTION: Over/Under Table ─────────────────────────────────────────────────
 function OverUnderTable({ over_under }) {
   const rows = [
-    {
-      label: "1.5",
-      over: over_under?.over_1_5,
-      under: over_under?.under_1_5,
-    },
-    {
-      label: "2.5",
-      over: over_under?.over_2_5,
-      under: over_under?.under_2_5,
-    },
-    {
-      label: "3.5",
-      over: over_under?.over_3_5,
-      under: over_under?.under_3_5,
-    },
+    { label: "1.5", over: over_under?.over_1_5, under: over_under?.under_1_5 },
+    { label: "2.5", over: over_under?.over_2_5, under: over_under?.under_2_5 },
+    { label: "3.5", over: over_under?.over_3_5, under: over_under?.under_3_5 },
   ];
 
   return (
-    <div
-      data-testid="over-under-market"
-      className="bg-zinc-900 border border-zinc-800 rounded-sm p-5"
-    >
-      <SectionTitle
-        icon={TrendingUp}
-        title="Over / Under"
-        subtitle="Probabilità gol totali"
-      />
+    <div data-testid="over-under-market" className="bg-zinc-900 border border-zinc-800 rounded-sm p-5">
+      <SectionTitle icon={TrendingUp} title="Over / Under" subtitle="Prob% · Quota decimale" />
       <table className="w-full">
         <thead>
           <tr className="border-b border-zinc-800">
-            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 pb-2 text-left">
-              Mercato
-            </th>
-            <th className="text-[9px] font-mono uppercase tracking-widest text-green-600 pb-2 text-right">
-              Over
-            </th>
-            <th className="text-[9px] font-mono uppercase tracking-widest text-red-600 pb-2 text-right">
-              Under
-            </th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 pb-2 text-left">Linea</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-green-600 pb-2 text-right">Over %</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 pb-2 text-right">Quota</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-red-600 pb-2 text-right">Under %</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 pb-2 text-right">Quota</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
             <tr key={r.label} className="border-b border-zinc-800/50">
-              <td className="py-2 text-sm font-mono font-bold text-white">
-                {r.label}
-              </td>
+              <td className="py-2 text-sm font-mono font-bold text-white">{r.label}</td>
               <td className="py-2 text-right">
-                <span
-                  className={`text-sm font-mono font-bold ${
-                    (r.over || 0) > 0.5 ? "text-green-400" : "text-zinc-400"
-                  }`}
-                >
+                <span className={`text-sm font-mono font-bold ${(r.over || 0) > 0.5 ? "text-green-400" : "text-zinc-400"}`}>
                   {pct(r.over)}
                 </span>
               </td>
               <td className="py-2 text-right">
-                <span
-                  className={`text-sm font-mono font-bold ${
-                    (r.under || 0) > 0.5 ? "text-red-400" : "text-zinc-400"
-                  }`}
-                >
+                <span className="text-xs font-mono text-zinc-500">{toOdds(r.over)}</span>
+              </td>
+              <td className="py-2 text-right">
+                <span className={`text-sm font-mono font-bold ${(r.under || 0) > 0.5 ? "text-red-400" : "text-zinc-400"}`}>
                   {pct(r.under)}
                 </span>
+              </td>
+              <td className="py-2 text-right">
+                <span className="text-xs font-mono text-zinc-500">{toOdds(r.under)}</span>
               </td>
             </tr>
           ))}
@@ -534,48 +546,35 @@ function CornersTable({ corners }) {
   ];
 
   return (
-    <div
-      data-testid="corners-market"
-      className="bg-zinc-900 border border-zinc-800 rounded-sm p-5"
-    >
-      <SectionTitle
-        icon={Activity}
-        title="Corner Over / Under"
-        subtitle="Distribuzione corner totali"
-      />
+    <div data-testid="corners-market" className="bg-zinc-900 border border-zinc-800 rounded-sm p-5">
+      <SectionTitle icon={Activity} title="Corner Over / Under" subtitle="Prob% · Quota decimale" />
       <table className="w-full">
         <thead>
           <tr className="border-b border-zinc-800">
-            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 pb-2 text-left">
-              Linea
-            </th>
-            <th className="text-[9px] font-mono uppercase tracking-widest text-amber-600 pb-2 text-right">
-              Over
-            </th>
-            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 pb-2 text-right">
-              Under
-            </th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 pb-2 text-left">Linea</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-amber-600 pb-2 text-right">Over %</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 pb-2 text-right">Quota</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 pb-2 text-right">Under %</th>
+            <th className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 pb-2 text-right">Quota</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
             <tr key={r.label} className="border-b border-zinc-800/50">
-              <td className="py-2 text-sm font-mono font-bold text-white">
-                {r.label}
-              </td>
+              <td className="py-2 text-sm font-mono font-bold text-white">{r.label}</td>
               <td className="py-2 text-right">
-                <span
-                  className={`text-sm font-mono font-bold ${
-                    (r.over || 0) > 0.5 ? "text-amber-400" : "text-zinc-400"
-                  }`}
-                >
+                <span className={`text-sm font-mono font-bold ${(r.over || 0) > 0.5 ? "text-amber-400" : "text-zinc-400"}`}>
                   {pct(r.over)}
                 </span>
               </td>
               <td className="py-2 text-right">
-                <span className="text-sm font-mono font-bold text-zinc-400">
-                  {pct(r.under)}
-                </span>
+                <span className="text-xs font-mono text-zinc-500">{toOdds(r.over)}</span>
+              </td>
+              <td className="py-2 text-right">
+                <span className="text-sm font-mono font-bold text-zinc-400">{pct(r.under)}</span>
+              </td>
+              <td className="py-2 text-right">
+                <span className="text-xs font-mono text-zinc-500">{toOdds(r.under)}</span>
               </td>
             </tr>
           ))}
@@ -606,6 +605,7 @@ function ExactScoresSection({ exact_scores }) {
         {exact_scores.slice(0, 8).map((s, i) => {
           const isTop = s.prob === maxProb;
           const probPct = ((s.prob || 0) * 100).toFixed(1);
+          const odds = toOdds(s.prob);
           return (
             <div
               key={i}
@@ -621,24 +621,15 @@ function ExactScoresSection({ exact_scores }) {
                   TOP
                 </span>
               )}
-              <p className="text-xl font-mono font-bold text-white mt-1">
-                {s.score}
-              </p>
-              <p
-                className={`text-sm font-mono font-bold mt-0.5 ${
-                  isTop ? "text-green-400" : "text-zinc-400"
-                }`}
-              >
+              <p className="text-xl font-mono font-bold text-white mt-1">{s.score}</p>
+              <p className={`text-sm font-mono font-bold mt-0.5 ${isTop ? "text-green-400" : "text-zinc-400"}`}>
                 {probPct}%
               </p>
+              <p className="text-xs font-mono text-zinc-600 mt-0.5">{odds}</p>
               {s.note && (
-                <p className="text-[9px] text-zinc-600 font-mono mt-1 leading-tight">
-                  {s.note}
-                </p>
+                <p className="text-[9px] text-zinc-600 font-mono mt-1 leading-tight">{s.note}</p>
               )}
-              <p className="text-[9px] font-mono text-zinc-700 mt-0.5">
-                #{i + 1}
-              </p>
+              <p className="text-[9px] font-mono text-zinc-700 mt-0.5">#{i + 1}</p>
             </div>
           );
         })}
@@ -697,7 +688,7 @@ function DataGapsSection({ data_gaps }) {
 }
 
 // ── MAIN EXPORT ───────────────────────────────────────────────────────────────
-export default function AnalysisResults({ analysis, onNewAnalysis }) {
+export default function AnalysisResults({ analysis, onNewAnalysis, onRecalculate }) {
   const {
     match_info,
     context,
@@ -708,6 +699,8 @@ export default function AnalysisResults({ analysis, onNewAnalysis }) {
     confidence,
     data_quality,
     data_gaps,
+    web_search_used,
+    web_queries_found,
   } = analysis || {};
 
   const home = match_info?.home || "Casa";
@@ -720,7 +713,10 @@ export default function AnalysisResults({ analysis, onNewAnalysis }) {
         match_info={match_info}
         confidence={confidence}
         data_quality={data_quality}
+        web_search_used={web_search_used}
+        web_queries_found={web_queries_found}
         onNewAnalysis={onNewAnalysis}
+        onRecalculate={onRecalculate}
       />
 
       {/* Context grid */}

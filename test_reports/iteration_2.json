@@ -1,0 +1,47 @@
+{
+  "summary": "Full e2e testing of Football Analyzer v2 with web search + normalized markets. All 11 backend tests passed (100%). All frontend features verified via UI automation with a real Napoli vs Inter analysis.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_web_search_features.py",
+    "/app/test_reports/pytest/pytest_results_iter2.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_web_search_features.py (new test file for v2 features)"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% (all 12 feature checks passed)"
+  },
+  "test_credentials": "none required",
+  "seed_data_creation": "Real Claude AI + DDG web search analysis of Napoli vs Inter, Serie A Giornata 30",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "App fully functional with v2 web search features. Backend: GET /api/ returns 'Web Search Enabled', POST /api/analyze runs 8 DDG queries before Claude (takes 60-120s), returns web_search_used=true, web_queries_found=8. normalize_markets() works correctly (1X2 sums to 1.0, O/U pairs sum to 1.0, corners sum to 1.0). Frontend: Web Search (8/8) badge in header, Ricalcola button visible, Over/Under table has 5 columns (Linea/Over%/Quota/Under%/Quota), Corners table same 5-column layout, 1X2 shows decimal odds next to probabilities, Exact scores show odds below probability, LoadingState shows web search steps.",
+  "verified_flows": [
+    "GET /api/ returns 'Web Search Enabled' message ✅",
+    "POST /api/analyze returns web_search_used=true ✅",
+    "web_queries_found > 0 (returned 8) ✅",
+    "1X2 probabilities sum to ~1.0 ✅",
+    "Over/Under pairs sum to ~1.0 ✅",
+    "Corners pairs sum to ~1.0 ✅",
+    "Analysis saved to history ✅",
+    "Web Search (8/8) badge in match header ✅",
+    "Ricalcola button visible and labeled ✅",
+    "1X2 market shows decimal odds (2.38, 3.45, 3.45) ✅",
+    "Over/Under table has 5 columns: Linea/Over%/Quota/Under%/Quota ✅",
+    "Corners table has 5 columns with Quota ✅",
+    "Exact scores show decimal odds below probability ✅",
+    "LoadingState has web search steps text ✅",
+    "History works, shows previous analyses ✅"
+  ]
+}
